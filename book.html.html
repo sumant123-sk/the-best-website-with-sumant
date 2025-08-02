@@ -1,0 +1,265 @@
+ <html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📖 Story Book</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0; padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
+      background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1f1c2c);
+      background-size: 400% 400%;
+      animation: bgAnimated 12s ease infinite;
+      min-height: 100vh;
+      padding: 60px 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    @keyframes bgAnimated {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    body::before, body::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: 0;
+      pointer-events: none;
+      animation: floatDots 10s linear infinite;
+    }
+
+    @keyframes floatDots {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0); }
+    }
+
+    .story-container {
+      position: relative;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 30px;
+      margin: 40px auto;
+      max-width: 850px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      z-index: 1;
+    }
+
+    .story-container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 35px rgba(0, 255, 255, 0.5);
+    }
+
+    .story-container h1 {
+      font-size: 2.3rem;
+      margin-bottom: 20px;
+      text-shadow: 0 0 15px #0ff;
+    }
+
+    .story-container p {
+      line-height: 1.8;
+      font-size: 1.1rem;
+      color: #e3e3e3;
+      margin-bottom: 15px;
+    }
+
+    .highlight {
+      color: #0ff;
+      font-weight: 700;
+    }
+
+    .glow-flash {
+      animation: glowPulse 2s infinite;
+      color: #ffcc00;
+      font-weight: bold;
+      text-shadow: 0 0 10px #fff;
+    }
+
+    @keyframes glowPulse {
+      0% { text-shadow: 0 0 5px #ff0; }
+      50% { text-shadow: 0 0 20px #ff0; }
+      100% { text-shadow: 0 0 5px #ff0; }
+    }
+
+    @media (max-width: 600px) {
+      .story-container {
+        padding: 20px;
+      }
+
+      .story-container h1 {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Keep your existing story HTML here -->
+  <!-- 👇 You already pasted stories above -->
+  <!-- Example: -->
+  <div class="story-container">
+    <h1>📖 The Mysterious Forest</h1>
+    <p>
+      Long ago, deep in the heart of the <span class="highlight">Enchanted Valley</span>, there existed a forest where time stood still. The trees whispered ancient secrets...
+    </p>
+    <p>
+      As he ventured deeper, he met talking owls, glowing mushrooms...
+    </p>
+  </div><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🌟 Animated Storybook</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0; padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at top left, #1e1e3f, #121212);
+      background-size: 400% 400%;
+      animation: gradientShift 20s ease infinite;
+      overflow-x: hidden;
+      color: white;
+      padding: 60px 20px;
+      position: relative;
+    }
+
+    @keyframes gradientShift {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    body::before, body::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.03) 2px, transparent 2px);
+      background-size: 60px 60px;
+      animation: floatStars 30s linear infinite;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    @keyframes floatStars {
+      0% {transform: translateY(0);}
+      50% {transform: translateY(-10px);}
+      100% {transform: translateY(0);}
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .story {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 40px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.1);
+      transition: 0.3s ease;
+    }
+
+    .story:hover {
+      box-shadow: 0 0 40px rgba(0, 255, 255, 0.4);
+      transform: scale(1.01);
+    }
+
+    .story h2 {
+      font-size: 2rem;
+      color: #00f0ff;
+      margin-bottom: 20px;
+      text-shadow: 0 0 8px #00f0ff;
+    }
+
+    .story p {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #e0e0e0;
+    }
+
+    @media (max-width: 600px) {
+      .story h2 { font-size: 1.5rem; }
+      .story p { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    
+    <div class="story">
+      <h2>🌲 The Forest of Whispers</h2>
+      <p>
+        Deep in the heart of the mountains, there existed a forest that was said to whisper ancient truths to anyone brave enough to listen. The trees glowed faintly at night, and the air buzzed with unseen energy. A young boy named Aryan once wandered inside seeking adventure...
+      </p>
+      <p>
+        As he ventured deeper, glowing vines shimmered in blue, and animals spoke in riddles. Aryan realized he was not just in a forest, but in a forgotten world where magic still lived. He encountered the Spirit of the Forest, who showed him visions of the past and the future...
+      </p>
+    </div>
+
+    <div class="story">
+      <h2>🪙 The Cursed Treasure</h2>
+      <p>
+        Many sailors had heard the tale of the cursed treasure of Black Isle, but none returned. That changed when Captain Mira set sail with her crew determined to break the curse. As the ship approached the island, storm clouds formed a face in the sky, warning them to turn back...
+      </p>
+      <p>
+        Deep within a cave guarded by illusions and riddles, they found the treasure: a glowing chest that pulsed with dark magic. Mira defied the odds, solving the final puzzle that broke the curse and freed the souls trapped for centuries...
+      </p>
+    </div>
+
+    <!-- You can duplicate the .story div above to add more stories -->
+
+  </div>
+</body>
+</html><div class="wave-bg"></div>
+
+<h1 class="glow">🌌 The Legend of Aranya</h1>
+
+<div class="story">
+  <p>Long ago, in the mystical realm of Aranya, where trees whispered secrets and rivers glowed under moonlight, lived a young warrior named Veer. He wasn’t born in royalty, but fate had chosen him for something greater.</p>
+  
+  <p>When darkness began to spread from the cursed forest of Darrvana, creatures of nightmares invaded the peaceful villages. The skies turned crimson, and a chilling wind carried the cries of the helpless.</p>
+  
+  <p>Guided by a glowing orb given by the seer Vyantra, Veer embarked on a quest to awaken the sleeping Guardians of Light. These elemental protectors—Agni, Varun, Vayu, and Dharti—once sealed the evil within Darrvana but had since faded into slumber.</p>
+
+  <p>His journey took him through blazing deserts, icy peaks, and a sea of illusions. Each Guardian demanded a test—not of strength, but of heart. Veer’s courage, kindness, and determination slowly rekindled the ancient powers.</p>
+
+  <p>In the final battle, Veer stood alone at the mouth of the abyss where darkness dwelled. The sky tore open with lightning as shadows rose like tides. But Veer, wielding the light of all four Guardians, became a blazing force that cleansed the land in a storm of fire and purity.</p>
+
+  <p>The realm of Aranya blossomed again. Trees sang, stars danced, and children heard the tale of Veer—the boy who became the Beacon of Light.</p>
+</div>
+
+
+
+  <!-- ✅ Insert all the other .story-container blocks here (like you pasted above) -->
+  <!-- All your 10+ stories are supported with this layout -->
+
+</body>
+</html>

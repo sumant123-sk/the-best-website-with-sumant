@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🌍 Global News - Live Updates</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
+  <style>
+    /* Main Body and Layout Styling */
+    body {
+      margin: 0;
+      padding: 40px;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      font-family: 'Poppins', sans-serif;
+      color: white;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    /* 3D and Glowing Title Styling */
+    .title-3d {
+      text-align: center;
+      font-size: clamp(2rem, 8vw, 4rem);
+      color: #ffcc00;
+      text-shadow:
+        0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9, 0 5px 0 #aaa,
+        0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3),
+        0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2),
+        0 20px 20px rgba(0,0,0,.15);
+      animation: glow 2s ease-in-out infinite alternate;
+      margin-bottom: 20px;
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 10px #ffcc00, 0 0 20px #ffcc00, 0 0 30px #ffaa00, 0 0 40px #ffaa00;
+      }
+      to {
+        text-shadow: 0 0 20px #ffcc00, 0 0 30px #ffaa00, 0 0 40px #ffaa00, 0 0 50px #ff8800;
+      }
+    }
+
+    /* Section Headers */
+    h1 {
+      font-size: clamp(1.5rem, 6vw, 2.5rem);
+      color: #00ffff;
+      text-shadow: 0 0 20px #00ffff;
+      text-align: center;
+      margin-top: 60px;
+      margin-bottom: 40px;
+      animation: fadeInDown 1s ease-out;
+    }
+
+    /* News List Container */
+    .news-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 800px;
+      width: 100%;
+      margin: auto;
+    }
+
+    /* Individual News Card Styling */
+    .news-card {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 20px;
+      border-radius: 15px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease forwards;
+      animation-delay: var(--delay, 0s); /* Use a CSS variable for staggered animation */
+      position: relative;
+      overflow: hidden;
+    }
+
+    .news-card:hover {
+      transform: scale(1.02);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.5), 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    
+    .news-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(-100%);
+      transition: transform 0.6s ease;
+    }
+
+    .news-card:hover::before {
+      transform: translateX(0);
+    }
+
+    .news-card a {
+      color: #ffcc00;
+      font-weight: bold;
+      font-size: clamp(1rem, 4vw, 1.2rem);
+      text-decoration: none;
+      transition: color 0.3s ease;
+      display: inline-block;
+      position: relative;
+      z-index: 1; /* Make sure text is above the hover effect */
+    }
+
+    .news-card p {
+      margin: 5px 0 0;
+      font-size: clamp(0.8rem, 3vw, 0.9rem);
+      color: #ccc;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    .glow-flicker {
+      color: #ffcc00;
+      font-weight: bold;
+      text-decoration: none;
+      text-shadow: 0 0 5px #ffd700, 0 0 10px #ffcc00, 0 0 15px #ffff33;
+      animation: flicker 1s infinite alternate;
+    }
+    
+    @keyframes flicker {
+      0%, 100% {
+        text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #ffcc00, 0 0 40px #ff9900, 0 0 50px #ff6600, 0 0 60px #ff3300, 0 0 70px #ff0000;
+      }
+      50% {
+        text-shadow: 0 0 5px #fff, 0 0 10px #ffcc00, 0 0 15px #ff9900, 0 0 20px #ff6600, 0 0 25px #ff3300, 0 0 30px #ff0000;
+      }
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="title-3d">🌍 NEWS</div>
+  <div id="news-container">
+    <!-- News sections will be dynamically added here by JavaScript -->
+  </div>
+
+  <script>
+    // Data for different news categories
+    const newsData = {
+      "Indian Movies": [
+        "Kalki 2898 AD - Sci-fi Blockbuster Continues Box Office Reign",
+        "Pushpa 2 Trailer Hits 100M Views in 3 Days",
+        "Singham Again's New Teaser Leaves Fans Excited",
+        "Brahmastra Part 2 Shooting Begins in Varanasi",
+        "War 2 Posters Revealed – Hrithik vs Jr. NTR",
+        "Don 3 with Ranveer Singh Confirmed for 2025",
+        "Shaitaan 2 Announced – Horror Returns",
+        "Laal Salaam Streaming on Netflix Now",
+        "Bhool Bhulaiyaa 3 to Release Diwali 2025",
+        "Yodha Movie Gains Global Audience",
+        "Salaar 2 Update: Prabhas Hints at Epic Sequel",
+        "Jawan Becomes Highest Grossing Indian Film"
+      ],
+      "Global News": [
+        "UN Discusses Urgent Climate Action at Global Summit",
+        "Tech Giants Launch Initiative to Fight Online Misinformation",
+        "Global Markets React to Rising Interest Rates",
+        "Breakthrough in Cancer Treatment Announced",
+        "NASA’s Mars Rover Sends New Images",
+        "Renewable Energy Hits Record Production Globally",
+        "New AI Model Can Translate Thoughts to Text",
+        "SpaceX Announces New Manned Mission to the Moon",
+        "World Health Organization Declares New Pandemic Protocol"
+      ],
+      "American Movies": [
+        "New 'Star Wars' Trilogy Announced by Disney",
+        "Christopher Nolan's Next Film is a Historical Epic",
+        "Marvel's 'Fantastic Four' Teaser Trailer Breaks Records",
+        "Tom Cruise to Film in Space for New Action Movie",
+        "Dwayne 'The Rock' Johnson Joins DC Universe",
+        "Avatar 3 to Explore Pandora's Deep Ocean",
+        "New 'Batman' Movie Casting a Younger Bruce Wayne",
+        "Pixar's 'Inside Out 2' Earns Critical Acclaim"
+      ],
+      "Pakistani Movies": [
+        "The Legend of Maula Jatt Sequel Confirmed",
+        "Pakistani Cinema Celebrates Blockbuster Eid Releases",
+        "Bin Roye 2 Production Begins, Fans Excited",
+        "Upcoming 'Superstar' Prequel in the Works",
+        "New Action Film 'Sherdil 2' Wraps Up Shooting",
+        "Quaid-e-Azam Zindabad Sequel in Talks",
+        "Kamli's Director Announces a New Thriller"
+      ],
+      "Chinese Movies": [
+        "Wandering Earth 3 Set for a 2025 Release",
+        "Chinese Box Office Sets New Summer Record",
+        "Zhang Yimou's New Film to Premiere at Cannes",
+        "Animated 'Nezha' Sequel in Development",
+        "Jackie Chan to Star in a New Historical Drama",
+        "The Battle at Lake Changjin 3 in Pre-production",
+        "The Wandering Earth Franchise Expands with Prequel"
+      ],
+      "Japanese Anime": [
+        "Jujutsu Kaisen Season 3 Confirmed for 2025",
+        "New Studio Ghibli Film 'How Do You Live?' Gets Global Release",
+        "Attack on Titan Final Season Part 4 Breaks Streaming Records",
+        "One Piece Live-Action Series Renewed for Two More Seasons",
+        "Demon Slayer Movie Dominates International Box Office"
+      ]
+    };
+
+    const newsContainer = document.getElementById("news-container");
+
+    // Function to create and append a news section
+    function createNewsSection(title, newsArray) {
+      // Create the main title for the section
+      const sectionTitle = document.createElement("h1");
+      sectionTitle.innerText = `🎬 Top Latest ${title}`;
+      newsContainer.appendChild(sectionTitle);
+
+      // Create the news list container
+      const newsList = document.createElement("div");
+      newsList.className = "news-list";
+      
+      // Get today's date
+      const today = new Date().toDateString();
+
+      // Loop through the news array and create a card for each item
+      newsArray.forEach((newsItem, index) => {
+        const card = document.createElement("div");
+        card.className = "news-card";
+        // Apply a staggered animation delay
+        card.style.setProperty("--delay", `${index * 0.1}s`); 
+
+        card.innerHTML = `
+          <a href="#" target="_blank" class="glow-flicker">${newsItem}</a>
+          <p>${today}</p>
+        `;
+        newsList.appendChild(card);
+      });
+
+      newsContainer.appendChild(newsList);
+    }
+
+    // Generate all the news sections dynamically
+    for (const category in newsData) {
+      createNewsSection(category, newsData[category]);
+    }
+  </script>
+</body>
+</html>

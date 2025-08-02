@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🌐 My Multi-Section Web</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    /* --- Main Page Styles --- */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #000428, #004e92);
+      color: white;
+      min-height: 100vh;
+      padding: 40px 20px;
+      text-align: center;
+      overflow-x: hidden;
+      animation: bgAnim 20s ease infinite;
+    }
+    @keyframes bgAnim {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 30px;
+      animation: fadeInDown 1s ease;
+      text-shadow: 0 0 20px cyan;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      max-width: 1000px;
+      margin: 0 auto 30px auto;
+    }
+    .card {
+      background: rgba(255,255,255,0.1);
+      padding: 30px;
+      border-radius: 20px;
+      text-decoration: none;
+      color: white;
+      box-shadow: 0 0 20px rgba(0,255,255,0.4);
+      transition: 0.3s ease;
+      display: block;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(0,255,255,0.3), transparent 70%);
+      animation: rotate 6s linear infinite;
+      z-index: 0;
+    }
+    .card:hover {
+      background: rgba(255,255,255,0.2);
+      transform: scale(1.05);
+    }
+    .card span {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 10px;
+      z-index: 1;
+      position: relative;
+      text-shadow: 0 0 15px #00ffff;
+    }
+    .card div {
+      font-size: 1.3rem;
+      z-index: 1;
+      position: relative;
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* --- Coding Guide Section Styles --- */
+    .coding-guide-section {
+      display: none; /* Initially hidden */
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.15);
+      animation: fadeIn 1s ease forwards;
+      text-align: left;
+      position: relative;
+      z-index: 2;
+    }
+    .coding-guide-section h1 {
+      font-size: 2.5rem;
+      color: #00f7ff;
+      text-shadow: 0 0 15px #00f7ff;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .coding-guide-section h2 {
+      font-size: 2rem;
+      color: #ffcc00;
+      border-bottom: 2px solid rgba(255,204,0,0.5);
+      padding-bottom: 10px;
+      margin-top: 40px;
+      margin-bottom: 20px;
+    }
+    .coding-guide-section p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      color: #e0e0e0;
+    }
+    pre {
+      background-color: #1a1a2e;
+      color: #e0e0e0;
+      padding: 20px;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-family: 'Courier New', Courier, monospace;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      border: 1px solid rgba(0,247,255,0.3);
+    }
+    .back-btn {
+      display: block;
+      margin: 30px auto 0;
+      padding: 10px 20px;
+      width: fit-content;
+      background: linear-gradient(to right, #ff416c, #ff4b2b);
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 15px #ff416c;
+      transition: 0.3s ease;
+    }
+    .back-btn:hover {
+      background: linear-gradient(to right, #ff4b2b, #ff416c);
+      box-shadow: 0 0 20px #ff4b2b;
+      transform: scale(1.05);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Main Grid Section -->
+  <div id="main-grid-section">
+    <h1>🌟 Welcome to My Multi-Section Web</h1>
+    <div class="grid">
+      <a class="card" href="news.html">
+        <span>📰</span>
+        <div>Global News</div>
+      </a>
+      <a class="card" href="book.html">
+        <span>📖</span>
+        <div>Story Book</div>
+      </a>
+      <a class="card" href="game.html">
+        <span>🎮</span>
+        <div>Mini Game</div>
+      </a>
+      <a class="card" href="mythology.html">
+        <span>🕉️</span>
+        <div>Mythology</div>
+      </a>
+      <!-- New card for the Coding Guide -->
+      <div class="card" onclick="showSection('coding-guide-section')">
+        <span>💻</span>
+        <div>Coding Guide</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Coding Guide Section -->
+  <div id="coding-guide-section" class="coding-guide-section">
+    <button class="back-btn" onclick="showSection('main-grid-section')">Back to Home</button>
+    <h1>💡 Programming Code Explained</h1>
+    <h2>1. HTML</h2>
+    <p>HTML (HyperText Markup Language) is used to structure web content. Think of it as the skeleton of a website.</p>
+    <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+  &lt;head&gt;
+    &lt;title&gt;My Web Page&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Hello World!&lt;/h1&gt;
+    &lt;p&gt;This is a paragraph.&lt;/p&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+    </pre>
+
+    <h2>2. CSS</h2>
+    <p>CSS (Cascading Style Sheets) is used for styling HTML elements. It's like the skin, clothes, and makeup for the skeleton, making it look beautiful.</p>
+    <pre>
+body {
+  background-color: #121212;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+p {
+  color: yellow;
+  font-size: 18px;
+}
+    </pre>
+
+    <h2>3. JavaScript</h2>
+    <p>JavaScript is used to make web pages interactive. It's the brain that adds functionality, like animations, buttons, and user interaction.</p>
+    <pre>
+&lt;script&gt;
+  document.addEventListener("DOMContentLoaded", function() {
+    console.log("The page is fully loaded!");
+    // You can add more interactive logic here.
+  });
+&lt;/script&gt;
+    </pre>
+  </div>
+
+  <script>
+    function showSection(sectionId) {
+      // Hide all sections first
+      document.getElementById('main-grid-section').style.display = 'none';
+      document.getElementById('coding-guide-section').style.display = 'none';
+
+      // Then, show the requested section
+      document.getElementById(sectionId).style.display = 'block';
+    }
+  </script>
+</body>
+</html>
