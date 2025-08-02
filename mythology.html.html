@@ -24,194 +24,79 @@
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
-
-    /* Main Container and Title */
-    .container {
-      max-width: 1000px;
-      margin: auto;
-      text-align: center;
-    }
-    .main-title {
-      font-size: 3.5rem;
-      font-weight: 700;
-      text-align: center;
-      margin-bottom: 60px;
-      color: #ffcc00;
-      text-shadow: 0 0 15px #ffcc00, 0 0 25px #ffaa00;
-      animation: titleGlow 2s ease-in-out infinite alternate;
-    }
-    @keyframes titleGlow {
-      from { text-shadow: 0 0 10px #ffcc00, 0 0 20px #ffcc00; }
-      to { text-shadow: 0 0 20px #ffcc00, 0 0 30px #ffaa00, 0 0 40px #ff8800; }
-    }
-
-    /* Story Card Styling */
-    .story-container {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      padding: 30px;
-      margin-bottom: 40px;
-      box-shadow: 0 0 20px rgba(0,255,255,0.2);
-      position: relative;
-      overflow: hidden;
-      animation: storyFadeIn 1s ease forwards;
-      opacity: 0;
-      transform: translateY(20px);
-      animation-delay: var(--delay);
-      transition: box-shadow 0.5s ease, transform 0.3s ease;
-    }
-    .story-container:hover {
-      box-shadow: 0 0 30px rgba(0,255,255,0.4), 0 0 50px rgba(0,255,255,0.1);
-      transform: translateY(-5px);
-    }
-    
-    .story-container::before {
+    body::before, body::after {
       content: '';
       position: absolute;
-      top: -5px;
-      left: -5px;
-      right: -5px;
-      bottom: -5px;
-      background: linear-gradient(45deg, #00f7ff, #ff00c8, #ffcc00);
-      z-index: -1;
-      filter: blur(15px);
-      opacity: 0;
-      transition: opacity 0.5s ease;
-    }
-    .story-container:hover::before {
-      opacity: 0.6;
-    }
-    
-    .story-title {
-      font-size: 2.5rem;
-      font-weight: 600;
-      color: #00f7ff;
-      text-shadow: 0 0 10px #00f7ff;
-      margin-bottom: 20px;
-    }
-    .story-image {
-      width: 100%;
+      width: 300px;
       height: 300px;
-      object-fit: cover;
-      border-radius: 15px;
-      margin-bottom: 25px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-      border: 2px solid #00f7ff;
-      transition: transform 0.5s ease;
+      background: radial-gradient(circle, rgba(0, 255, 255, 0.4), transparent 70%);
+      border-radius: 50%;
+      z-index: -1;
+      animation: pulse 8s ease infinite alternate;
     }
-    .story-image:hover { transform: scale(1.02); }
-    
+    body::before {
+      top: -50px;
+      left: -50px;
+    }
+    body::after {
+      bottom: -50px;
+      right: -50px;
+      animation-delay: 4s;
+    }
+    @keyframes pulse {
+      from { transform: scale(0.9); }
+      to { transform: scale(1.1); }
+    }
+    /* Main Content Container */
+    .story-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(8px);
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    /* Title and Heading Styles */
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      color: #00ffff;
+      text-shadow: 0 0 15px #00ffff;
+    }
+    h2 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      color: #ffcc00;
+      text-shadow: 0 0 10px #ffcc00;
+    }
     .story-text {
-      font-size: 1.1rem;
-      line-height: 1.7;
       text-align: justify;
+      line-height: 1.8;
       margin-bottom: 15px;
-      color: #e0e0e0;
-    }
-
-    /* Animation Keyframes */
-    @keyframes storyFadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .main-title { font-size: 2.5rem; }
-      .story-title { font-size: 2rem; }
-      .story-container { padding: 20px; }
-      .story-text { font-size: 1rem; }
+      font-size: 1.1rem;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1 class="main-title">🌌 The Glow of Ancient Myths</h1>
-    
-    <!-- Story 1: The Ramayana - Indian Mythology -->
-    <div class="story-container" style="--delay: 0s;">
-      <h2 class="story-title">The Legend of Rama and Sita</h2>
-      <img src="https://placehold.co/1000x300/222244/ffffff?text=Ramayana+Epic+of+Love+%26+Duty" class="story-image" alt="Ramayana Epic">
-      <p class="story-text">
-        In the ancient kingdom of Ayodhya, Prince Rama, an incarnation of Lord Vishnu, was the epitome of virtue. With his beautiful wife Sita, he lived a life of serene duty. However, a cruel twist of fate led to his exile for fourteen years, forcing him and Sita, along with his devoted brother Lakshmana, to live in the dense Dandakaranya forest. It was here that the demon king Ravana, ruler of Lanka, became infatuated with Sita and, through deception, abducted her, spiriting her away in his flying chariot, the Pushpaka Vimana.
-      </p>
-      <p class="story-text">
-        Devastated, Rama and Lakshmana embarked on a monumental quest to rescue Sita. Their journey led them to form an alliance with the Vanara army, led by the monkey king Sugriva and his powerful general, Hanuman. Hanuman, with his unwavering devotion and strength, made a heroic leap across the ocean to Lanka, found Sita, and delivered Rama's message.
-      </p>
-      <p class="story-text">
-        The epic war that followed was a clash of cosmic proportions. The forces of good, led by Rama, fought against Ravana’s formidable army of demons. After a long and fierce battle, Rama, with his divine arrows, defeated the ten-headed Ravana and liberated Sita. Their return to Ayodhya marked the end of their exile, a joyous occasion celebrated with the lighting of lamps—a festival now known as Diwali. Rama's reign was hailed as Ram Rajya, an era of perfect justice and happiness.
-      </p>
-    </div>
-    
-    <!-- Story 2: Perseus and Medusa - Greek Mythology -->
-    <div class="story-container" style="--delay: 0.2s;">
-      <h2 class="story-title">Perseus and the Gorgon's Gaze</h2>
-      <img src="https://placehold.co/1000x300/331133/ffffff?text=Perseus+Slaying+Medusa" class="story-image" alt="Perseus and Medusa">
-      <p class="story-text">
-        Perseus, the demigod son of Zeus and the mortal Danaë, was destined for greatness. His grand-father, King Acrisius of Argos, fearing a prophecy that he would be killed by his own grandson, cast Danaë and the infant Perseus into the sea in a wooden chest. They were saved by a kind fisherman named Dictys. Years later, Dictys's cruel brother, King Polydectes, desired Danaë and sought to get rid of Perseus. Polydectes tricked Perseus into a seemingly impossible quest: to bring back the head of the Gorgon Medusa, a monstrous creature whose gaze could turn men to stone.
-      </p>
-      <p class="story-text">
-        With the help of the gods, Perseus was equipped with divine gifts: a polished shield from Athena, a curved sword from Hermes, the winged sandals of Hermes, the Cap of Darkness (Helm of Hades) for invisibility, and a magic bag to safely carry Medusa's head. Guided by Athena, he found the cave where Medusa and her sisters lived. Using the polished shield as a mirror to avoid her deadly gaze, he crept up to the sleeping Gorgon and, in a single strike, beheaded her with his sword.
-      </p>
-      <p class="story-text">
-        As he flew away with the head, Medusa’s sisters awoke and pursued him, but he escaped using the Helm of Hades. On his journey home, he saved Princess Andromeda from a sea monster and turned Polydectes to stone with Medusa's head. The prophecy was eventually fulfilled by accident when a discus Perseus threw at a sporting event veered off course and struck Acrisius, killing him instantly. Perseus became a hero, and Medusa's head was given to Athena to adorn her shield.
-      </p>
-    </div>
-    
-    <!-- Story 3: Thor and Mjolnir - Norse Mythology -->
-    <div class="story-container" style="--delay: 0.4s;">
-      <h2 class="story-title">The Theft of Thor's Hammer</h2>
-      <img src="https://placehold.co/1000x300/442222/ffffff?text=Thor+Retrieving+Mjolnir" class="story-image" alt="Thor and Mjolnir">
-      <p class="story-text">
-        In the realm of Asgard, the gods' home, the mighty thunder god Thor awoke one day to a terrible discovery: his legendary hammer, Mjolnir, was missing. Without his weapon, Thor was powerless, and Asgard was vulnerable. His fury shook the very foundations of the world. Loki, the trickster god, was tasked with finding the hammer. He borrowed Freya’s cloak of falcon feathers and flew to the land of the giants, Jotunheim.
-      </p>
-      <p class="story-text">
-        There, he found the giant Thrym, who boasted that he had stolen Mjolnir and hidden it eight miles beneath the earth. Thrym declared he would only return the hammer if the beautiful goddess Freya agreed to marry him. Upon hearing this, Freya was furious and refused to go to Jotunheim.
-      </p>
-      <p class="story-text">
-        The gods gathered in a council. Heimdall, the wise guardian of the Bifrost, proposed a daring plan: Thor should disguise himself as Freya and go to Thrym. Thor was reluctant but ultimately agreed, donning a bridal gown and a veil. Loki, ever the cunning one, disguised himself as Thor’s handmaiden. When they arrived, Thrym was overjoyed, but he grew suspicious of Thor's large appetite and fierce eyes. Loki, with his quick wit, explained that "Freya" had not eaten in eight days out of excitement for her wedding. Thrym was convinced.
-      </p>
-      <p class="story-text">
-        Finally, Thrym brought out Mjolnir to consecrate the marriage. The moment the hammer was placed in his hands, Thor shed his disguise, grabbed his beloved weapon, and in a thunderous rage, slew Thrym and every giant in the hall. Mjolnir was returned, and the balance of the nine realms was restored.
-      </p>
-    </div>
-
-    <!-- Story 4: The Myth of Osiris - Egyptian Mythology -->
-    <div class="story-container" style="--delay: 0.6s;">
-      <h2 class="story-title">The Resurrection of Osiris</h2>
-      <img src="https://placehold.co/1000x300/224422/ffffff?text=Osiris+and+Isis+Egyptian+Myth" class="story-image" alt="Osiris and Isis">
-      <p class="story-text">
-        Osiris was the benevolent god-king of ancient Egypt, who taught his people the arts of agriculture and civilization. His jealous brother, Set, the god of chaos and violence, harbored a deep envy for Osiris's popularity. Set devised a wicked plot. He secretly measured Osiris and had a magnificent sarcophagus made to his exact dimensions. At a feast, he announced that the sarcophagus would be a gift to anyone who could fit inside it. When Osiris lay down to try, Set's followers slammed the lid shut, sealed it with molten lead, and cast it into the Nile River.
-      </p>
-      <p class="story-text">
-        Isis, Osiris's devoted wife and sister, and the goddess of magic, was heartbroken. She set out on a long and desperate search for her husband's body. Her journey took her to a distant land, where she found the sarcophagus embedded in a tree trunk that had been used to support a palace. She retrieved the body and brought it back to Egypt, where she concealed it in the marshes. However, Set discovered the body, tore it into fourteen pieces, and scattered them across Egypt to ensure Osiris could never be made whole again.
-      </p>
-      <p class="story-text">
-        Undeterred, Isis, with the help of her sister Nephthys and the god Anubis, meticulously searched for and reassembled all the pieces. Using her powerful magic, she breathed life back into Osiris's body. Though he could not rule the living world again, he became the eternal ruler of the underworld, the land of the dead. Isis, through her magic, conceived a son, Horus, who would grow up to avenge his father and rightfully reclaim the throne of Egypt from Set.
-      </p>
-    </div>
-
-    <!-- Story 5: Amaterasu - Japanese Mythology -->
-    <div class="story-container" style="--delay: 0.8s;">
-      <h2 class="story-title">Amaterasu and the Celestial Cave</h2>
-      <img src="https://placehold.co/1000x300/444422/ffffff?text=Amaterasu+The+Sun+Goddess" class="story-image" alt="Amaterasu in her cave">
-      <p class="story-text">
-        Amaterasu, the glorious sun goddess, was the ruler of the heavens and the most revered deity in the Japanese pantheon. She was also the ancestor of the Imperial House of Japan. Her brother, Susanoo, the storm god, was a wild and destructive force. Susanoo's behavior grew increasingly reckless and offensive, and his pranks caused immense harm to Amaterasu and her peaceful domain.
-      </p>
-      <p class="story-text">
-        One day, in a fit of rage, Susanoo threw a flayed horse into Amaterasu’s weaving hall, causing one of her attendants to die from shock. Devastated and furious, Amaterasu could no longer bear her brother’s chaotic nature. In a moment of profound grief and anger, she sealed herself within the Celestial Rock Cave (Amano-Iwato), plunging the entire world into darkness.
-      </p>
-      <p class="story-text">
-        The eight million gods and goddesses gathered outside the cave, desperate to bring the sun goddess back and restore light to the world. They tried everything: loud prayers, offerings, and solemn pleas, but Amaterasu would not emerge. Finally, the goddess of mirth, Ame-no-Uzume, had a brilliant idea. She overturned a tub and began to dance wildly and comically upon it, stripping off her clothes. The gods found this so amusing that they began to laugh uproariously.
-      </p>
-      <p class="story-text">
-        Intrigued by the sound of laughter, Amaterasu peeked out of the cave. The gods quickly showed her a beautiful, polished mirror and told her that a goddess even more splendid than herself had arrived. As Amaterasu leaned forward to get a better look, the god Ame-no-Tajikarao, a god of immense strength, pulled the rock away and dragged her out. The sun returned, and light filled the world once more, never to be hidden in a cave again.
-      </p>
-    </div>
-    
+  <div class="story-container">
+    <h1>🌌 The Myth of Amaterasu and the Sun</h1>
+    <h2>(Japanese Mythology)</h2>
+    <p class="story-text">
+      In the high heavens of Japanese mythology, the sun goddess Amaterasu ruled with grace and benevolence, bringing light and warmth to the world. Her younger brother, Susanoo, the storm god, was known for his wild and destructive nature, a stark contrast to his sister&#39;s peaceful domain.
+    </p>
+    <p class="story-text">
+      One day, in a fit of rage, Susanoo threw a flayed horse into Amaterasu’s weaving hall, causing one of her attendants to die from shock. Devastated and furious, Amaterasu could no longer bear her brother’s chaotic nature. In a moment of profound grief and anger, she sealed herself within the Celestial Rock Cave (Amano-Iwato), plunging the entire world into darkness.
+    </p>
+    <p class="story-text">
+      The eight million gods and goddesses gathered outside the cave, desperate to bring the sun goddess back and restore light to the world. They tried everything: loud prayers, offerings, and solemn pleas, but Amaterasu would not emerge. Finally, the goddess of mirth, Ame-no-Uzume, had a brilliant idea. She overturned a tub and began to dance wildly and comically upon it, stripping off her clothes. The gods found this so amusing that they began to laugh uproariously.
+    </p>
+    <p class="story-text">
+      Intrigued by the sound of laughter, Amaterasu peeked out of the cave. The gods quickly showed her a beautiful, polished mirror and told her that a goddess even more splendid than herself had arrived. As Amaterasu leaned forward to get a better look, the god Ame-no-Tajikarao, a god of immense strength, pulled the rock away and dragged her out. The sun returned, and light filled the world once more, never to be hidden in a cave again.
+    </p>
   </div>
 
 </body>
