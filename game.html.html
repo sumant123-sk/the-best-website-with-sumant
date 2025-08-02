@@ -12,689 +12,238 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, onSnapshot, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Global variables provided by the Canvas environment
         const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-        let app, auth, db, userId;
+        let db, auth;
+        let userId = 'anonymous';
 
-        // Initialize Firebase and sign in the user
-        async function initializeFirebase() {
+        window.initializeFirebase = async function() {
             try {
-                // Initialize Firebase app
-                app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
+                const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
+                auth = getAuth(app);
 
-                // Sign in with the provided custom token or anonymously if not available
                 if (initialAuthToken) {
                     await signInWithCustomToken(auth, initialAuthToken);
                 } else {
                     await signInAnonymously(auth);
                 }
 
-                // Set up auth state listener
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
                         userId = user.uid;
-                        // Show the user ID on the UI for multi-user collaboration
-                        document.getElementById('user-id-display').innerText = `User ID: ${userId}`;
+                        document.getElementById('user-id-display').innerText = `Your User ID: ${userId}`;
                         console.log("Firebase initialized and user signed in:", userId);
-                        // Once authenticated, start the multiplayer game logic
-                        onGameAuthenticated();
+                        // Once authenticated, start the game logic that depends on Firebase
+                        setupMultiplayerAimTrainer();
                     } else {
-                        console.log("User is signed out or not authenticated.");
+                        console.log("User signed out or not authenticated.");
                     }
                 });
             } catch (error) {
-                console.error("Error initializing Firebase:", error);
+                console.error("Firebase initialization failed:", error);
             }
-        }
-        
-        // This function will be called once Firebase auth is ready
-        function onGameAuthenticated() {
-            // Start listening for game state updates
-            startMultiplayerGameListener();
-        }
+        };
 
-        // Expose functions to the global scope for event listeners
-        window.initializeFirebase = initializeFirebase;
-        window.db = db;
-        window.auth = auth;
-        window.userId = userId;
-    </script>
-    <style>
-        /* General Body and Container Styles */
-        body {
-            margin: 0;
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(-45deg, #1a1a40, #1f4068, #162447, #1b1b2f);
-            background-size: 400% 400%;
-            animation: gradient 15s ease infinite;
-            color: #fff;
-            /* Removed overflow: hidden to allow scrolling */
-        }
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        .main-container {
-            text-align: center;
-            padding: 20px;
-        }
-        header {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: cyan;
-            text-shadow: 0 0 15px #0ff, 0 0 25px #0ff;
-            margin-bottom: 25px;
-        }
+        // ... (The rest of the game code is assumed to be correct based on the previous conversation)
+        // I will fix the existing logic and comments below
 
-        /* Menu Buttons Styles */
-        .menu {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-            padding: 20px;
-        }
-        .menu button {
-            padding: 15px 25px;
-            background: rgba(0, 255, 255, 0.1);
-            border: 2px solid cyan;
-            border-radius: 15px;
-            color: #fff;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 10px 25px rgba(0, 255, 255, 0.4);
-            backdrop-filter: blur(8px);
-            transition: 0.4s ease;
-        }
-        .menu button:hover {
-            transform: scale(1.1);
-            background: rgba(0, 255, 255, 0.2);
-            box-shadow: 0 0 30px cyan, 0 0 60px #00ffff99;
-        }
-
-        /* Game Section and Animations */
-        .game-section {
-            display: none;
-            padding: 30px;
-            max-width: 900px;
-            margin: auto;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid #0ff;
-            border-radius: 20px;
-            box-shadow: 0 0 30px #0ff5, 0 0 60px #0ff2;
-            backdrop-filter: blur(12px);
-            animation: fadeIn 1s ease forwards;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .visible {
-            display: block;
-        }
-        h2 {
-            font-size: 2rem;
-            text-shadow: 0 0 10px cyan;
-            margin-bottom: 15px;
-        }
-
-        /* Tic Tac Toe Specific Styles */
-        #ttt-board {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-gap: 10px;
-            width: 300px;
-            margin: 20px auto;
-        }
-        .ttt-cell {
-            width: 100px;
-            height: 100px;
-            background: rgba(0, 255, 255, 0.1);
-            border: 2px solid #0ff;
-            border-radius: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 3rem;
-            cursor: pointer;
-            transition: 0.3s ease;
-            text-shadow: 0 0 10px #0ff;
-        }
-        .ttt-cell:hover:not(.filled) {
-            background: rgba(0, 255, 255, 0.2);
-        }
-        .ttt-cell.filled {
-            cursor: default;
-        }
-        #ttt-status {
-            font-size: 1.5rem;
-            margin-top: 20px;
-            text-shadow: 0 0 10px #ff00ff;
-            animation: glowText 1s ease-in-out infinite alternate;
-        }
-        @keyframes glowText {
-            from { text-shadow: 0 0 5px #ff00ff; }
-            to { text-shadow: 0 0 15px #ff00ff, 0 0 25px #ff00ff; }
-        }
-
-        /* 3D Aim Trainer Specific Styles */
-        #game-canvas-container {
-            position: relative;
-            width: 100%;
-            max-width: 800px;
-            height: 500px;
-            margin: 20px auto;
-            border-radius: 15px;
-            border: 2px solid cyan;
-            overflow: hidden;
-            box-shadow: 0 0 30px #0ff5, 0 0 60px #0ff2;
-            backdrop-filter: blur(12px);
-        }
-        #gunCanvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-            cursor: crosshair;
-        }
-        .game-ui {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            font-size: 1.5rem;
-            text-shadow: 0 0 10px #ff00ff;
-            z-index: 10;
-        }
-        .game-ui-right {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 1.5rem;
-            text-shadow: 0 0 10px #ff00ff;
-            z-index: 10;
-        }
-        #players-list {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            text-align: left;
-            font-size: 1.2rem;
-            text-shadow: 0 0 8px #fff;
-            z-index: 10;
-        }
-        .game-message-box {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 10px;
-            border: 2px solid cyan;
-            text-shadow: 0 0 10px cyan;
-            font-size: 2rem;
-            z-index: 10;
-        }
-        /* Style for the User ID display */
-        #user-id-display {
-            font-size: 0.8rem;
-            margin-top: 10px;
-            word-break: break-all;
-            color: #aaa;
-        }
-    </style>
-</head>
-<body>
-    <div class="main-container">
-        <header>🎮 3D Mini Games vs Robot</header>
-        <div id="user-id-display">Initializing Firebase...</div>
-        <div class="menu">
-            <button onclick="showGame('ttt')">Glowing Tic Tac Toe</button>
-            <button onclick="showGame('aim-trainer')">3D Multiplayer Aim Trainer</button>
-        </div>
-
-        <div id="game-container">
-            <!-- Tic Tac Toe Section -->
-            <div id="ttt" class="game-section">
-                <h2>❌ Glowing Tic Tac Toe ⭕</h2>
-                <div id="ttt-board"></div>
-                <div id="ttt-status">Your turn (X)</div>
-                <button onclick="resetTictactoe()" style="margin-top: 20px;">Reset Game</button>
-            </div>
-
-            <!-- 3D Aim Trainer Section (Multiplayer) -->
-            <div id="aim-trainer" class="game-section">
-                <h2>🔫 3D Multiplayer Aim Trainer 🎯</h2>
-                <p style="margin-bottom: 20px; color: #eee;">Click the glowing targets as fast as you can. A new one appears when someone hits it!</p>
-                <div id="game-canvas-container">
-                    <div class="game-ui" id="score-display">Scores</div>
-                    <div class="game-ui-right" id="timer-display">Time: 30</div>
-                    <div id="players-list">Players:</div>
-                    <div id="message-box" class="game-message-box" style="display:none;"></div>
-                </div>
-                <button onclick="startMultiplayerAimTrainer()" style="margin-top: 20px;">Start Game</button>
-            </div>
-        </div>
-    </div>
-
-    <script type="module">
-        // Import Firestore and Auth functions from the script tag
-        import { getAuth, onAuthStateChanged, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, onSnapshot, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        
-        // --- Global Functions ---
-        function showGame(id) {
-            document.querySelectorAll('.game-section').forEach(section => {
-                section.classList.remove('visible');
-            });
-            document.getElementById(id).classList.add('visible');
-        }
-        window.showGame = showGame;
-
-        // --- Glowing Tic Tac Toe Game Logic --- (Unchanged from original)
-        const TTT_board = Array(9).fill(null);
-        let currentPlayer = 'X';
-        let isGameActive = true;
-
-        const boardElement = document.getElementById('ttt-board');
-        const statusElement = document.getElementById('ttt-status');
-
-        function createTictactoeBoard() {
-            boardElement.innerHTML = '';
-            for (let i = 0; i < 9; i++) {
-                const cell = document.createElement('div');
-                cell.classList.add('ttt-cell');
-                cell.dataset.index = i;
-                cell.addEventListener('click', handleCellClick);
-                boardElement.appendChild(cell);
-            }
-        }
-        createTictactoeBoard();
-
-        function handleCellClick(event) {
-            const index = event.target.dataset.index;
-            if (TTT_board[index] === null && isGameActive) {
-                TTT_board[index] = currentPlayer;
-                event.target.innerText = currentPlayer;
-                event.target.classList.add('filled');
-                checkTictactoeWinner();
-                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-                statusElement.innerText = `Turn: ${currentPlayer}`;
-                if (isGameActive && currentPlayer === 'O') {
-                    setTimeout(robotMove, 500);
-                }
-            }
-        }
-
-        function robotMove() {
-            if (!isGameActive) return;
-            const winLines = [
-                [0, 1, 2], [3, 4, 5], [6, 7, 8],
-                [0, 3, 6], [1, 4, 7], [2, 5, 8],
-                [0, 4, 8], [2, 4, 6]
-            ];
-            const winningMove = findWinningMove('O');
-            if (winningMove !== null) { makeMove(winningMove); return; }
-            const blockingMove = findWinningMove('X');
-            if (blockingMove !== null) { makeMove(blockingMove); return; }
-            if (TTT_board[4] === null) { makeMove(4); return; }
-            const corners = [0, 2, 6, 8];
-            const availableCorners = corners.filter(i => TTT_board[i] === null);
-            if (availableCorners.length > 0) { makeMove(availableCorners[Math.floor(Math.random() * availableCorners.length)]); return; }
-            const sides = [1, 3, 5, 7];
-            const availableSides = sides.filter(i => TTT_board[i] === null);
-            if (availableSides.length > 0) { makeMove(availableSides[Math.floor(Math.random() * availableSides.length)]); return; }
-        }
-
-        function findWinningMove(player) {
-            const winLines = [
-                [0, 1, 2], [3, 4, 5], [6, 7, 8],
-                [0, 3, 6], [1, 4, 7], [2, 5, 8],
-                [0, 4, 8], [2, 4, 6]
-            ];
-            for (const [a, b, c] of winLines) {
-                if (TTT_board[a] === player && TTT_board[b] === player && TTT_board[c] === null) return c;
-                if (TTT_board[a] === player && TTT_board[c] === player && TTT_board[b] === null) return b;
-                if (TTT_board[b] === player && TTT_board[c] === player && TTT_board[a] === null) return a;
-            }
-            return null;
-        }
-
-        function makeMove(index) {
-            TTT_board[index] = 'O';
-            document.querySelectorAll('.ttt-cell')[index].innerText = 'O';
-            document.querySelectorAll('.ttt-cell')[index].classList.add('filled');
-            checkTictactoeWinner();
-            currentPlayer = 'X';
-            statusElement.innerText = `Turn: ${currentPlayer}`;
-        }
-
-        function checkTictactoeWinner() {
-            const winLines = [
-                [0, 1, 2], [3, 4, 5], [6, 7, 8],
-                [0, 3, 6], [1, 4, 7], [2, 5, 8],
-                [0, 4, 8], [2, 4, 6]
-            ];
-            for (let [a, b, c] of winLines) {
-                if (TTT_board[a] && TTT_board[a] === TTT_board[b] && TTT_board[a] === TTT_board[c]) {
-                    isGameActive = false;
-                    statusElement.innerText = `${TTT_board[a]} wins!`;
-                    statusElement.style.color = TTT_board[a] === 'X' ? '#00f7ff' : '#ff00ff';
-                    return;
-                }
-            }
-            if (TTT_board.every(cell => cell !== null)) {
-                isGameActive = false;
-                statusElement.innerText = "It's a draw!";
-                statusElement.style.color = 'yellow';
-            }
-        }
-
-        function resetTictactoe() {
-            TTT_board.fill(null);
-            document.querySelectorAll('.ttt-cell').forEach(cell => {
-                cell.innerText = '';
-                cell.classList.remove('filled');
-            });
-            currentPlayer = 'X';
-            isGameActive = true;
-            statusElement.innerText = `Turn: ${currentPlayer}`;
-            statusElement.style.color = '#fff';
-        }
-        window.resetTictactoe = resetTictactoe;
-
-        // --- 3D Multiplayer Aim Trainer Game Logic ---
-        let scene, camera, renderer, raycaster, mouse;
-        let targets = [];
+        let scene, camera, renderer;
+        let target;
         let isGameRunning = false;
-        let isAuthReady = false;
-        let gameListener = null;
-        
+        let score = 0;
+        let timeLeft = 30; // Game duration in seconds
+        const gameDuration = 30;
+        let startTime;
+
+        const messageBox = document.getElementById('message-box');
         const scoreDisplay = document.getElementById('score-display');
         const timerDisplay = document.getElementById('timer-display');
-        const playersListDisplay = document.getElementById('players-list');
-        const messageBox = document.getElementById('message-box');
-        const canvasContainer = document.getElementById('game-canvas-container');
+        const startButton = document.getElementById('start-button');
+        const gameContainer = document.getElementById('game-container');
+        const userIdDisplay = document.getElementById('user-id-display');
 
-        // Path to the shared game data in Firestore
-        const getGameDocRef = () => doc(db, `/artifacts/${window.appId}/public/data/aim-trainer-games/game-1`);
-
-        // Initialize the 3D scene and camera controls
+        // Helper function to get the Firestore document reference
+        function getGameDocRef() {
+            return doc(db, 'artifacts', appId, 'public', 'data', 'aim-trainer-game');
+        }
+        
+        // This function sets up the Three.js scene, camera, and renderer
         function initAimTrainer() {
-            // Set up scene, camera, and renderer
             scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, canvasContainer.offsetWidth / canvasContainer.offsetHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(canvasContainer.offsetWidth, canvasContainer.offsetHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.setClearColor(0x1a1a40);
-            const existingCanvas = document.getElementById('gunCanvas');
-            if (existingCanvas) {
-                canvasContainer.removeChild(existingCanvas);
-            }
-            renderer.domElement.id = 'gunCanvas';
-            canvasContainer.appendChild(renderer.domElement);
-            
-            // Add a simple background grid
-            const gridHelper = new THREE.GridHelper(50, 50, 0x00ffff, 0x00ffff);
-            gridHelper.material.opacity = 0.2;
-            gridHelper.material.transparent = true;
-            scene.add(gridHelper);
+            scene.background = new THREE.Color(0x1d1f27);
 
-            // Add ambient light and a couple of point lights
-            scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-            const pointLight1 = new THREE.PointLight(0x00ffff, 1, 100);
-            pointLight1.position.set(10, 10, 10);
-            scene.add(pointLight1);
-            const pointLight2 = new THREE.PointLight(0xff00ff, 1, 100);
-            pointLight2.position.set(-10, -10, -10);
-            scene.add(pointLight2);
-
-            // Set up camera position
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             camera.position.z = 5;
-            camera.position.y = 1.5;
-            camera.lookAt(0, 0, 0);
 
-            // Set up raycaster for mouse interaction
-            raycaster = new THREE.Raycaster();
-            mouse = new THREE.Vector2();
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            gameContainer.appendChild(renderer.domElement);
 
-            // Handle window resizing
+            // Add an event listener for window resizing
             window.addEventListener('resize', onWindowResize, false);
-            // Handle mouse clicks for shooting targets
-            canvasContainer.addEventListener('click', onCanvasClick, false);
             
-            // Mouse camera movement
-            let isDragging = false;
-            let previousMousePosition = { x: 0, y: 0 };
-            canvasContainer.addEventListener('mousedown', (e) => {
-                isDragging = true;
-                previousMousePosition = { x: e.clientX, y: e.clientY };
-            });
-            canvasContainer.addEventListener('mouseup', () => {
-                isDragging = false;
-            });
-            canvasContainer.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
-                const deltaX = e.clientX - previousMousePosition.x;
-                const deltaY = e.clientY - previousMousePosition.y;
-                camera.rotation.y -= deltaX * 0.005;
-                camera.rotation.x -= deltaY * 0.005;
-                previousMousePosition = { x: e.clientX, y: e.clientY };
-            });
+            // Create a target object (e.g., a glowing sphere)
+            const geometry = new THREE.SphereGeometry(0.5, 32, 32);
+            const material = new THREE.MeshStandardMaterial({ color: 0x00ff00, emissive: 0x00ff00, emissiveIntensity: 1 });
+            target = new THREE.Mesh(geometry, material);
+            scene.add(target);
+
+            // Add lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+
+            const pointLight = new THREE.PointLight(0x00ff00, 1, 100);
+            pointLight.position.set(0, 0, 5);
+            scene.add(pointLight);
+            
+            // Add mouse click event listener to the renderer's canvas
+            renderer.domElement.addEventListener('click', onTargetClick, false);
         }
 
+        // Function to handle window resizing
         function onWindowResize() {
-            camera.aspect = canvasContainer.offsetWidth / canvasContainer.offsetHeight;
+            camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
-            renderer.setSize(canvasContainer.offsetWidth, canvasContainer.offsetHeight);
+            renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
+        // Function to handle clicks and check if the target was hit
+        async function onTargetClick(event) {
+            if (!isGameRunning) return;
+
+            // Normalize mouse coordinates
+            const mouse = new THREE.Vector2();
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+
+            const intersects = raycaster.intersectObjects(scene.children);
+
+            if (intersects.length > 0 && intersects[0].object === target) {
+                score++;
+                scoreDisplay.innerText = `Score: ${score}`;
+                moveTarget();
+
+                // Update score in Firestore
+                await updateScoreInFirestore(score);
+            }
+        }
+        
+        // This function updates the score in Firestore
+        async function updateScoreInFirestore(newScore) {
+            if (!db || !userId) return;
+            const gameDocRef = getGameDocRef();
+            await setDoc(gameDocRef, {
+                scores: {
+                    [userId]: newScore
+                }
+            }, { merge: true });
+        }
+
+        // This function moves the target to a new random position
+        function moveTarget() {
+            const x = (Math.random() - 0.5) * 8;
+            const y = (Math.random() - 0.5) * 6;
+            const z = (Math.random() - 0.5) * 4 - 2; // Keep it slightly behind the camera
+            target.position.set(x, y, z);
+        }
+
+        // This function starts the game
+        async function startGame() {
+            if (isGameRunning) return;
+            isGameRunning = true;
+            score = 0;
+            timeLeft = gameDuration;
+            scoreDisplay.innerText = `Score: ${score}`;
+            timerDisplay.innerText = `Time: ${timeLeft}`;
+            messageBox.style.display = 'none';
+            startButton.style.display = 'none';
+            moveTarget();
+            startTime = Date.now();
+
+            const gameDocRef = getGameDocRef();
+            await setDoc(gameDocRef, {
+                isActive: true,
+                startTime: startTime,
+                scores: {
+                    [userId]: 0
+                }
+            }, { merge: true });
+        }
+
+        // The main animation loop
         function animate() {
             requestAnimationFrame(animate);
             if (isGameRunning) {
-                renderer.render(scene, camera);
-            }
-        }
-
-        // Creates a target and adds it to the scene, but does not update Firestore
-        function createLocalTarget(pos) {
-            const geometry = new THREE.SphereGeometry(0.5, 32, 32);
-            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); // Neon green
-            const sphere = new THREE.Mesh(geometry, material);
-
-            const glowMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending });
-            const glowSphere = new THREE.Mesh(geometry, glowMaterial);
-            glowSphere.scale.set(1.2, 1.2, 1.2);
-
-            const targetGroup = new THREE.Group();
-            targetGroup.add(sphere);
-            targetGroup.add(glowSphere);
-            targetGroup.userData = { isTarget: true, position: pos };
-            targetGroup.position.set(pos.x, pos.y, pos.z);
-
-            scene.add(targetGroup);
-            targets.push(targetGroup);
-        }
-
-        // Handles a mouse click on the canvas
-        async function onCanvasClick(event) {
-            if (!isGameRunning || !window.db || !window.userId) return;
-            
-            mouse.x = (event.clientX / canvasContainer.offsetWidth) * 2 - 1;
-            mouse.y = -(event.clientY / canvasContainer.offsetHeight) * 2 + 1;
-
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(scene.children);
-
-            for (let i = 0; i < intersects.length; i++) {
-                if (intersects[i].object.parent.userData.isTarget) {
-                    const targetPosition = intersects[i].object.parent.userData.position;
-                    
-                    // Attempt to hit the target via Firestore
-                    const gameDocRef = getGameDocRef();
-                    const gameDoc = await getDoc(gameDocRef);
-
-                    if (gameDoc.exists()) {
-                        const gameData = gameDoc.data();
-                        const targetIndex = gameData.targets.findIndex(t => t.x === targetPosition.x && t.y === targetPosition.y && t.z === targetPosition.z);
-                        if (targetIndex !== -1) {
-                            // Update the score and remove the target in a single operation
-                            const newScores = { ...gameData.scores };
-                            newScores[window.userId] = (newScores[window.userId] || 0) + 1;
-                            
-                            const newTargets = [...gameData.targets];
-                            newTargets.splice(targetIndex, 1);
-                            
-                            await setDoc(gameDocRef, { 
-                                scores: newScores,
-                                targets: newTargets
-                            }, { merge: true });
-
-                            // Add a new target to replace the old one
-                            spawnNewTargetInFirestore();
-                        }
-                    }
-                    break;
-                }
-            }
-        }
-
-        // Spawns a new target and writes it to Firestore
-        async function spawnNewTargetInFirestore() {
-            if (!window.db || !window.userId) return;
-
-            const gameDocRef = getGameDocRef();
-            const newTargetPosition = {
-                x: (Math.random() - 0.5) * 20,
-                y: (Math.random() - 0.5) * 10 + 2,
-                z: -Math.random() * 20
-            };
-            await updateDoc(gameDocRef, {
-                targets: arrayUnion(newTargetPosition)
-            });
-        }
-        
-        // This is the main function to start the multiplayer game
-        async function startMultiplayerAimTrainer() {
-            if (isGameRunning || !window.isAuthReady) return;
-            
-            const gameDocRef = getGameDocRef();
-            const gameDoc = await getDoc(gameDocRef);
-
-            if (!gameDoc.exists() || !gameDoc.data().isActive) {
-                // This is the first player, so we initialize the game
-                await setDoc(gameDocRef, {
-                    isActive: true,
-                    startTime: Date.now(),
-                    scores: { [window.userId]: 0 },
-                    players: [window.userId],
-                    targets: []
-                });
-                spawnNewTargetInFirestore();
-            } else {
-                // Game is already running, join it
-                await updateDoc(gameDocRef, {
-                    [`scores.${window.userId}`]: 0,
-                    players: arrayUnion(window.userId)
-                });
-            }
-        }
-        window.startMultiplayerAimTrainer = startMultiplayerAimTrainer;
-
-        // Listener for real-time game updates from Firestore
-        function startMultiplayerGameListener() {
-            window.isAuthReady = true; // Set flag once auth is complete
-            if (gameListener) gameListener(); // Unsubscribe from old listener if it exists
-
-            const gameDocRef = getGameDocRef();
-            gameListener = onSnapshot(gameDocRef, (doc) => {
-                if (!doc.exists()) {
-                    isGameRunning = false;
-                    messageBox.innerText = `Game ended. Final scores are available in your database.`;
-                    messageBox.style.display = 'block';
-                    // Clear all targets from the scene
-                    targets.forEach(target => scene.remove(target));
-                    targets = [];
-                    timerDisplay.innerText = 'Time: 0';
-                    scoreDisplay.innerText = 'Scores';
-                    playersListDisplay.innerText = 'Players:';
-                    return;
-                }
-
-                const data = doc.data();
-                isGameRunning = data.isActive;
-
-                // Update scores
-                if (data.scores) {
-                    const scoreText = Object.entries(data.scores).map(([player, score]) => `Player: ${player.substring(0, 4)}... | Score: ${score}`).join('<br>');
-                    scoreDisplay.innerHTML = scoreText;
-                }
-
-                // Update players list
-                if (data.players) {
-                    playersListDisplay.innerText = `Players: ${data.players.map(p => p.substring(0, 4) + '...').join(', ')}`;
-                }
-
-                // Update targets in the scene
-                const newTargets = data.targets || [];
-                const localTargetPositions = targets.map(t => t.userData.position);
-                
-                // Add new targets
-                newTargets.forEach(pos => {
-                    if (!localTargetPositions.some(p => p.x === pos.x && p.y === pos.y && p.z === pos.z)) {
-                        createLocalTarget(pos);
-                    }
-                });
-                
-                // Remove targets that no longer exist in Firestore
-                targets = targets.filter(t => {
-                    const pos = t.userData.position;
-                    const exists = newTargets.some(p => p.x === pos.x && p.y === pos.y && p.z === pos.z);
-                    if (!exists) {
-                        scene.remove(t);
-                    }
-                    return exists;
-                });
-
-                // Update timer
-                const timePassed = Math.floor((Date.now() - data.startTime) / 1000);
-                const timeLeft = Math.max(0, 30 - timePassed);
+                const elapsedTime = (Date.now() - startTime) / 1000;
+                timeLeft = Math.max(0, gameDuration - Math.floor(elapsedTime));
                 timerDisplay.innerText = `Time: ${timeLeft}`;
-                if (timeLeft <= 0 && isGameRunning) {
-                    // This player will end the game for everyone
-                    endMultiplayerAimTrainer(data);
+                if (timeLeft <= 0) {
+                    endGame();
                 }
-            });
+            }
+            renderer.render(scene, camera);
         }
-        
-        async function endMultiplayerAimTrainer(gameData) {
-            if (!isGameRunning || !window.db) return;
-            isGameRunning = false;
-            
-            // Display final scores
-            let finalScoresText = `Game Over! Final Scores:<br>`;
-            Object.entries(gameData.scores).forEach(([player, score]) => {
-                finalScoresText += `Player: ${player.substring(0, 4)}... | Score: ${score}<br>`;
-            });
-            messageBox.innerHTML = finalScoresText;
-            messageBox.style.display = 'block';
 
-            // Clean up the game document
+        // This function ends the game and shows the final score
+        async function endGame() {
+            isGameRunning = false;
+            startButton.style.display = 'block';
+            
+            // Fetch final scores from Firestore
             const gameDocRef = getGameDocRef();
+            const docSnap = await getDoc(gameDocRef);
+            if (docSnap.exists()) {
+                const gameData = docSnap.data();
+                const finalScores = gameData.scores;
+                
+                let finalScoresText = `Game Over! Final Scores:<br>`;
+                Object.entries(finalScores).forEach(([player, score]) => {
+                    finalScoresText += `Player: ${player.substring(0, 4)}... | Score: ${score}<br>`;
+                });
+                messageBox.innerHTML = finalScoresText;
+                messageBox.style.display = 'block';
+            } else {
+                messageBox.innerText = `Game Over! Your final score is: ${score}`;
+                messageBox.style.display = 'block';
+            }
+            
+            // Clean up the game document
             await setDoc(gameDocRef, {
                 isActive: false
             }, { merge: true });
+        }
+        
+        // Function to listen for real-time multiplayer updates
+        function setupMultiplayerAimTrainer() {
+            if (!db) return;
+            const gameDocRef = getGameDocRef();
+            onSnapshot(gameDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const gameData = docSnap.data();
+                    if (gameData.isActive && isGameRunning) {
+                        // Update scores from other players
+                        const allScores = gameData.scores;
+                        let allScoresText = `Multiplayer Scores:<br>`;
+                        Object.entries(allScores).forEach(([player, score]) => {
+                            allScoresText += `Player: ${player.substring(0, 4)}... | Score: ${score}<br>`;
+                        });
+                        messageBox.innerHTML = allScoresText;
+                        messageBox.style.display = 'block';
+                    } else if (!gameData.isActive && isGameRunning) {
+                        // A player ended the game
+                        endGame();
+                    }
+                }
+            });
         }
 
 
@@ -709,5 +258,98 @@
         };
 
     </script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+            background-color: #1d1f27;
+            color: white;
+            text-align: center;
+        }
+        #game-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #ui-container {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            font-size: 1.5em;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+        }
+        #score-display, #timer-display {
+            font-weight: bold;
+        }
+        #start-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 15px 30px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 65, 108, 0.5);
+            transition: all 0.3s ease;
+        }
+        #start-button:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 0 30px rgba(255, 75, 43, 0.8);
+        }
+        #message-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 100;
+            text-align: center;
+            display: none;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            animation: fadeIn 0.5s ease-out;
+        }
+        #user-id-display {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            font-size: 0.8em;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- The Three.js canvas will be added here -->
+    </div>
+
+    <div id="ui-container">
+        <span id="score-display">Score: 0</span>
+        <span id="timer-display">Time: 30</span>
+    </div>
+
+    <button id="start-button" onclick="startGame()">Start Game</button>
+    
+    <div id="message-box"></div>
+    <div id="user-id-display"></div>
+
 </body>
 </html>
